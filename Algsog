@@ -1,0 +1,132 @@
+import React, { useState } from "react";
+import { Button } from "@/components/ui/button";
+import { Card, CardContent } from "@/components/ui/card";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { motion } from "framer-motion";
+
+export default function Home() {
+  const [view, setView] = useState("default");
+  const [phone, setPhone] = useState("");
+  const [otp, setOtp] = useState("");
+  const [generatedOtp, setGeneratedOtp] = useState(null);
+
+  const sendOtp = () => {
+    const fakeOtp = Math.floor(100000 + Math.random() * 900000).toString();
+    setGeneratedOtp(fakeOtp);
+    console.log("OTP sent:", fakeOtp); // في التطبيق الحقيقي سترسل SMS هنا
+    setView("otpVerify");
+  };
+
+  const verifyOtp = () => {
+    if (otp === generatedOtp) {
+      alert("تم التحقق بنجاح ✅");
+      setView("adminDashboard");
+    } else {
+      alert("رمز غير صحيح ❌");
+    }
+  };
+
+  return (
+    <div className="min-h-screen bg-gray-50 p-6">
+      <header className="flex items-center justify-between py-4">
+        <div className="flex items-center space-x-2">
+          <motion.div initial={{ x: -20, opacity: 0 }} animate={{ x: 0, opacity: 1 }}>
+            <img src="/logo.png" alt="algsog logo" className="h-10" />
+          </motion.div>
+          <h1 className="text-2xl font-bold text-blue-900">algsog</h1>
+        </div>
+        <div className="space-x-2">
+          <Button className="bg-blue-900 text-white" onClick={() => setView("otpLogin")}>تسجيل دخول</Button>
+          <Button className="bg-green-600 text-white" onClick={() => setView("register")}>إنشاء حساب</Button>
+          <Button className="bg-orange-500 hover:bg-orange-600 text-white" onClick={() => setView("subscribe")}>اشترك الآن - 200 دج</Button>
+        </div>
+      </header>
+
+      <main className="mt-8">
+        {view === "otpLogin" && (
+          <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} className="max-w-sm mx-auto bg-white rounded-2xl shadow-lg p-6">
+            <h2 className="text-xl font-semibold text-blue-900 mb-4">تسجيل الدخول برقم الهاتف</h2>
+            <div className="space-y-4">
+              <div>
+                <Label htmlFor="phone">رقم الهاتف</Label>
+                <Input
+                  id="phone"
+                  value={phone}
+                  onChange={(e) => setPhone(e.target.value)}
+                  placeholder="05XXXXXXXX"
+                />
+              </div>
+              <Button onClick={sendOtp} className="w-full bg-blue-900 hover:bg-blue-800 text-white">
+                إرسال رمز التحقق
+              </Button>
+            </div>
+          </motion.div>
+        )}
+
+        {view === "otpVerify" && (
+          <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} className="max-w-sm mx-auto bg-white rounded-2xl shadow-lg p-6">
+            <h2 className="text-xl font-semibold text-blue-900 mb-4">أدخل رمز التحقق</h2>
+            <div className="space-y-4">
+              <Input
+                value={otp}
+                onChange={(e) => setOtp(e.target.value)}
+                placeholder="أدخل الرمز المرسل"
+              />
+              <Button onClick={verifyOtp} className="w-full bg-green-600 hover:bg-green-700 text-white">
+                تحقق
+              </Button>
+            </div>
+          </motion.div>
+        )}
+
+        {view === "adminDashboard" && (
+          <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} className="bg-white rounded-2xl shadow-lg p-6 max-w-5xl mx-auto">
+            <h2 className="text-2xl font-bold text-blue-900 mb-6">لوحة تحكم الإدارة</h2>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              <div className="bg-gray-100 rounded-xl p-4">
+                <h3 className="text-lg font-semibold text-blue-800 mb-2">إحصائيات المستخدمين</h3>
+                <p><strong>عدد المستخدمين:</strong> 152</p>
+                <p><strong>المفعلين:</strong> 134</p>
+                <p><strong>غير مفعلين:</strong> 18</p>
+              </div>
+              <div className="bg-gray-100 rounded-xl p-4">
+                <h3 className="text-lg font-semibold text-blue-800 mb-2">إحصائيات الاشتراكات</h3>
+                <p><strong>اشتراكات نشطة:</strong> 98</p>
+                <p><strong>اشتراكات منتهية:</strong> 36</p>
+                <Button className="mt-4 bg-blue-900 text-white">إدارة الاشتراكات</Button>
+              </div>
+              <div className="md:col-span-2 bg-gray-100 rounded-xl p-4">
+                <h3 className="text-lg font-semibold text-blue-800 mb-2">إدارة المستخدمين</h3>
+                <div className="overflow-x-auto">
+                  <table className="w-full text-right">
+                    <thead>
+                      <tr className="bg-blue-100">
+                        <th className="p-2">الاسم</th>
+                        <th className="p-2">الهاتف</th>
+                        <th className="p-2">الحالة</th>
+                        <th className="p-2">إجراءات</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {[1,2,3].map((i) => (
+                        <tr key={i} className="border-b">
+                          <td className="p-2">مستخدم {i}</td>
+                          <td className="p-2">0550{i}XXXX</td>
+                          <td className="p-2 text-green-600">مفعل</td>
+                          <td className="p-2">
+                            <Button size="sm" className="bg-red-600 text-white">حذف</Button>
+                          </td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+            </div>
+          </motion.div>
+        )}
+      </main>
+    </div>
+  );
+}
